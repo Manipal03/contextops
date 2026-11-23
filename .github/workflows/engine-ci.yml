@@ -1,0 +1,33 @@
+name: Engine CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Run engine and CLI tests
+        run: python -m unittest discover -s tests -v
+      - name: Install package
+        run: python -m pip install .
+      - name: Verify installed import outside the source path
+        run: python -I -c "from vector_engine import VectorIndex; i = VectorIndex(2); i.upsert('example', [1, 0]); assert i.search([1, 0])[0].id == 'example'"
+      - name: Verify installed command
+        run: manipal-vector --help

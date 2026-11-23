@@ -1,0 +1,51 @@
+services:
+  web:
+    build:
+      context: ./apps/web
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_started
+
+  api:
+    build:
+      context: ./services/api
+    environment:
+      ENVIRONMENT: development
+      WEB_ORIGIN: http://localhost:3000
+      DATABASE_URL: postgresql+psycopg://contextops:change-me-in-production@postgres:5432/contextops
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: contextops
+      POSTGRES_USER: contextops
+      POSTGRES_PASSWORD: change-me-in-production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U contextops -d contextops"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
