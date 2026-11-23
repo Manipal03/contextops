@@ -11,8 +11,8 @@ requires-python = ">=3.10"
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/Manipal03/manipal-vector"
-Issues = "https://github.com/Manipal03/manipal-vector/issues"
+Repository = "https://github.com/Manipal03/contextops"
+Issues = "https://github.com/Manipal03/contextops/issues"
 
 [project.scripts]
 manipal-vector = "vector_engine.__main__:main"

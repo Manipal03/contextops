@@ -1,13 +1,38 @@
-# Manipal Vector
+# ContextOps
 
-A vector search engine built from scratch in Python, using only the standard library.
-It stores vectors and finds the nearest records with exact search. No vector database,
-NumPy, or external service is required. Python 3.10 or later is required.
+ContextOps is an early-stage project for investigating changes and conflicting
+decisions across engineering specifications and meeting notes. The planned
+product combines a dashboard, an API, and research/verification agents that
+return findings with exact supporting passages and unresolved questions.
 
-**Status: early prototype, not production-ready.** The first product targets
-developers embedding search in Python applications. The priorities are simple
-setup, predictable behavior, and transparent scoring. See [the release roadmap](ROADMAP.md)
-for the work required before a supported release.
+**Manipal Vector** is its independently usable Python vector search component,
+built from scratch in this repository. The engine works today; connecting it
+to the application is the next milestone.
+
+This repository is a prototype and is not ready for production deployment.
+
+## First product workflow (planned)
+
+> Compare the original specification, revised specification, and meeting notes.
+> What changed, what conflicts, and what needs clarification before release?
+
+The intended workflow is upload -> retrieve passages -> investigate changes ->
+verify findings -> inspect citations -> export a report. A later document is not
+automatically authoritative: a proposed date change must not be reported as
+approved without evidence.
+
+## Design direction
+
+- Ingestion: parsing, chunking, embeddings, document versions and source locations.
+- Shared retrieval service: Manipal Vector, future keyword search and ranking.
+- Investigation: research and verification agents with bounded follow-up searches.
+- REST and MCP adapters: reuse application services and authorization checks.
+- Next.js dashboard: document management, reports, and evidence inspection.
+
+Embedding and agent dependencies belong outside the dependency-free engine.
+The planned application owns workspace authorization; engine metadata filters
+are not an authorization boundary. Similarity scores are not confidence
+probabilities. Exact search stays the correctness baseline for future indexes.
 
 ## Repository contents
 
@@ -21,10 +46,28 @@ for the work required before a supported release.
 | `docker-compose.yml` | Development scaffold, not a production deployment |
 
 The web/API scaffold does not yet use `VectorIndex` and cannot ingest documents.
-Its interface includes planned capabilities. PostgreSQL and Redis are not required
-for the Python engine. CI currently validates the engine and its packaging only.
-The scaffold's dependency and security review is still pending; do not expose it
-as a production service.
+Chat currently returns a placeholder; agent trace labels do not represent real
+searches, claim verification, or LangGraph execution. SSE framing exists, but
+processing currently finishes before events are emitted. MCP is not implemented.
+PostgreSQL and Redis are development configuration only, not application persistence.
+CI currently validates the engine and its packaging only. No live deployment is
+claimed. See [the phased roadmap](ROADMAP.md) for acceptance criteria.
+
+## Run the application scaffold locally
+
+With Docker Compose available, run `docker compose up --build` from the repository
+root. The dashboard is at `http://localhost:3000`, API documentation at
+`http://localhost:8000/docs`, and health endpoint at `/v1/health`.
+The Compose credentials are development defaults. This starts a prototype,
+not a functional document investigation service.
+
+## Manipal Vector
+
+A Python 3.10+ vector search engine with no runtime dependencies. It stores
+vectors and finds nearest records with exact search. It remains usable without
+the ContextOps dashboard, an LLM, PostgreSQL, or Redis. Its first users are
+developers embedding vector search in Python applications; priorities are
+simple setup, predictable behavior, and transparent scoring.
 
 ## Run it
 
